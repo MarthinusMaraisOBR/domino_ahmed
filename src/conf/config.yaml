@@ -42,7 +42,7 @@ data_processor: # Data processor configurable parameters
   input_dir: /data/ahmed_data/raw/  # FIXED NVIDIA Guideline 3
   cached_dir: /data/ahmed_data/cached/  # FIXED Changed from AWS paths
   use_cache: false
-  num_processors: 8  # FIXED: NVIDIA Guideline 5 - Reduced from 12 for Docker stability
+  num_processors: 12  # FIXED: NVIDIA Guideline 5 - Reduced from 12 for Docker stability
 
 # ┌───────────────────────────────────────────┐
 # │            Solution variables             │
@@ -83,8 +83,8 @@ data: # Input directory for training and validation data
     
   bounding_box_surface: # NVIDIA Guideline 11: Surface geometry bounding box
     # Tight box around Ahmed body surface
-    min: [-0.5, -0.4, -0.4]   # [x_min, y_min, z_min] - slight margin around body
-    max: [1.8, 0.4, 0.8]    # [x_max, y_max, z_max] - slight margin around body
+    min: [-1.5, -0.4, 0]   # [x_min, y_min, z_min] - slight margin around body
+    max: [1.0, 0.4, 0.5]    # [x_max, y_max, z_max] - slight margin around body
     
   gpu_preprocessing: true
   gpu_output: true
@@ -211,7 +211,7 @@ val: # Validation configurable parameters
 eval: # Testing configurable parameters
   test_path: /data/ahmed_data/ahmed_data/raw_test/  # ← Only runs 451-500
   save_path: /data/ahmed_data/predictions/  # FIXED NVIDIA Guideline 17
-  checkpoint_name: DoMINO.0.499.pt
+  checkpoint_name: DoMINO.0.49.pt
   scaling_param_path: outputs/Ahmed_Dataset/scaling_params  # FIXED NVIDIA Guideline 19
   refine_stl: False # Automatically refine STL during inference
   stencil_size: 7 # Stencil size for evaluating surface and volume model
