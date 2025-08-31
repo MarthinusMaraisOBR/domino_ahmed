@@ -18,47 +18,77 @@ with open('test_output.txt', 'r') as f:
 
 df_forces = pd.DataFrame(forces)
 
-# Read geometric parameters - corrected path
-geo_df = pd.read_csv('/data/ahmed_data/organized/coefficients/fine/geo_parameters_1.csv')
-# Frontal area = body-height * body-width (in mm, so convert to m)
-frontal_area = (geo_df['body-height'].iloc[0] * geo_df['body-width'].iloc[0]) / 1e6
-print(f"Frontal area: {frontal_area:.6f} m²")
-
-# Calculate coefficients (velocity=1, density=1)
-df_forces['Cd_pred'] = 2 * df_forces['drag_pred'] / frontal_area
-df_forces['Cd_true'] = 2 * df_forces['drag_true'] / frontal_area
-df_forces['Cl_pred'] = 2 * df_forces['lift_pred'] / frontal_area
-df_forces['Cl_true'] = 2 * df_forces['lift_true'] / frontal_area
-
-# Read actual coefficient values from files - corrected path
+# Get frontal area and coefficients for each case
+frontal_areas = []
+body_heights = []
+body_widths = []
 cd_true_values = []
 cl_true_values = []
+
 for run in df_forces['run']:
+    # Read geometry file for this specific run
+    geo_file = f'/data/ahmed_data/organized/coefficients/fine/geo_parameters_{run}.csv'
+    geo_df = pd.read_csv(geo_file)
+    
+    # Extract dimensions (in mm)
+    body_height = geo_df['body-height'].iloc[0]
+    body_width = geo_df['body-width'].iloc[0]
+    
+    # Calculate frontal area (convert mm² to m²)
+    frontal_area = (body_height * body_width) / 1e6
+    
+    body_heights.append(body_height)
+    body_widths.append(body_width)
+    frontal_areas.append(frontal_area)
+    
+    # Read coefficient file
     coeff_file = f'/data/ahmed_data/organized/coefficients/fine/force_mom_varref_{run}.csv'
-    try:
-        coeff_df = pd.read_csv(coeff_file)
-        cd_true_values.append(coeff_df['cd'].iloc[0])
-        cl_true_values.append(coeff_df['cl'].iloc[0])
-    except:
-        cd_true_values.append(np.nan)
-        cl_true_values.append(np.nan)
+    coeff_df = pd.read_csv(coeff_file)
+    cd_true_values.append(coeff_df['cd'].iloc[0])
+    cl_true_values.append(coeff_df['cl'].iloc[0])
 
-df_forces['Cd_file'] = cd_true_values
-df_forces['Cl_file'] = cl_true_values
+# Add to dataframe
+df_forces['body_height_mm'] = body_heights
+df_forces['body_width_mm'] = body_widths
+df_forces['frontal_area_m2'] = frontal_areas
+df_forces['Cd_true_file'] = cd_true_values
+df_forces['Cl_true_file'] = cl_true_values
 
-# Calculate errors
-df_forces['Cd_error_%'] = 100 * (df_forces['Cd_pred'] - df_forces['Cd_file']) / df_forces['Cd_file']
-df_forces['Cl_error_%'] = 100 * (df_forces['Cl_pred'] - df_forces['Cl_file']) / df_forces['Cl_file']
+# Calculate coefficients using individual frontal areas
+df_forces['Cd_pred_calc'] = 2 * df_forces['drag_pred'] / df_forces['frontal_area_m2']
+df_forces['Cd_true_calc'] = 2 * df_forces['drag_true'] / df_forces['frontal_area_m2']
+df_forces['Cl_pred_calc'] = 2 * df_forces['lift_pred'] / df_forces['frontal_area_m2']
+df_forces['Cl_true_calc'] = 2 * df_forces['lift_true'] / df_forces['frontal_area_m2']
 
-print("\nCoefficient Comparison (first 10 cases):")
-print(df_forces[['run', 'Cd_pred', 'Cd_file', 'Cd_error_%', 'Cl_pred', 'Cl_file', 'Cl_error_%']].head(10))
+# Calculate errors (comparing predicted to file values)
+df_forces['Cd_error_%'] = 100 * (df_forces['Cd_pred_calc'] - df_forces['Cd_true_file']) / df_forces['Cd_true_file']
+df_forces['Cl_error_%'] = 100 * (df_forces['Cl_pred_calc'] - df_forces['Cl_true_file']) / df_forces['Cl_true_file']
 
-print("\nStatistics:")
+print("\n=== COEFFICIENT COMPARISON RESULTS ===")
+print(f"\nFrontal area statistics:")
+print(f"  Min: {df_forces['frontal_area_m2'].min():.6f} m²")
+print(f"  Max: {df_forces['frontal_area_m2'].max():.6f} m²")
+print(f"  Mean: {df_forces['frontal_area_m2'].mean():.6f} m²")
+
+print("\nFirst 10 cases:")
+print(df_forces[['run', 'frontal_area_m2', 'Cd_pred_calc', 'Cd_true_file', 'Cd_error_%']].head(10).to_string())
+
+print("\n=== OVERALL STATISTICS ===")
 print(f"Mean Cd error: {df_forces['Cd_error_%'].mean():.2f}%")
+print(f"Mean absolute Cd error: {df_forces['Cd_error_%'].abs().mean():.2f}%")
 print(f"Mean absolute Cl error: {df_forces['Cl_error_%'].abs().mean():.2f}%")
-print(f"Cd RMSE: {np.sqrt(np.mean((df_forces['Cd_pred'] - df_forces['Cd_file'])**2)):.4f}")
-print(f"Cl RMSE: {np.sqrt(np.mean((df_forces['Cl_pred'] - df_forces['Cl_file'])**2)):.4f}")
+print(f"Cd RMSE: {np.sqrt(np.mean((df_forces['Cd_pred_calc'] - df_forces['Cd_true_file'])**2)):.4f}")
+print(f"Cl RMSE: {np.sqrt(np.mean((df_forces['Cl_pred_calc'] - df_forces['Cl_true_file'])**2)):.4f}")
 
-# Save results
+# Calculate R² for coefficients
+from scipy import stats
+r2_cd = stats.pearsonr(df_forces['Cd_true_file'], df_forces['Cd_pred_calc'])[0]**2
+r2_cl = stats.pearsonr(df_forces['Cl_true_file'], df_forces['Cl_pred_calc'])[0]**2
+print(f"\nR² scores:")
+print(f"  Cd R²: {r2_cd:.4f}")
+print(f"  Cl R²: {r2_cl:.4f}")
+
+# Save complete results
 df_forces.to_csv('coefficient_comparison.csv', index=False)
-print("\nResults saved to coefficient_comparison.csv")
+print("\n✅ Full results saved to coefficient_comparison.csv")
+print("   This file includes frontal areas, predicted and actual coefficients for each case")
