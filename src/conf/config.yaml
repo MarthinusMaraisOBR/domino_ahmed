@@ -214,10 +214,10 @@ val: # Validation configurable parameters
 # │          Testing data Configs             │
 # └───────────────────────────────────────────┘  
 eval: # Testing configurable parameters
-  # test_path: /data/ahmed_data/ahmed_data/raw_test/  # ← Only runs 451-500
-  test_path: /data/ahmed_data/ahmed_data/raw_test_train_1_50/  # ← testing on training data 1-50
-  # save_path: /data/ahmed_data/predictions/  # FIXED NVIDIA Guideline 17
-  save_path: /data/ahmed_data/predictions_train/  # ← testing on training data 1-50
+  test_path: /data/ahmed_data/ahmed_data/raw_test/  # ← Only runs 451-500
+  # test_path: /data/ahmed_data/ahmed_data/raw_test_train_1_50/  # ← testing on training data 1-50
+  save_path: /data/ahmed_data/predictions3/  # FIXED NVIDIA Guideline 17
+  # save_path: /data/ahmed_data/predictions_train/  # ← testing on training data 1-50
   checkpoint_name: DoMINO.0.499.pt  # ← CHANGE THIS (was DoMINO.0.49.pt)
   scaling_param_path: outputs/NEWAhmed_Dataset  # ← CHANGE THIS (remove /scaling_params)
   refine_stl: False # Automatically refine STL during inference
