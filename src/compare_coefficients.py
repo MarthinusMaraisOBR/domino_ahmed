@@ -41,11 +41,32 @@ for run in df_forces['run']:
     body_widths.append(body_width)
     frontal_areas.append(frontal_area)
     
-    # Read coefficient file
+    # Read coefficient file - check column names first
     coeff_file = f'/data/ahmed_data/organized/coefficients/fine/force_mom_varref_{run}.csv'
     coeff_df = pd.read_csv(coeff_file)
-    cd_true_values.append(coeff_df['cd'].iloc[0])
-    cl_true_values.append(coeff_df['cl'].iloc[0])
+    
+    # Debug: print column names for first file
+    if run == df_forces['run'].iloc[0]:
+        print(f"Column names in coefficient file: {coeff_df.columns.tolist()}")
+    
+    # Try different possible column names
+    if 'cd' in coeff_df.columns:
+        cd_true_values.append(coeff_df['cd'].iloc[0])
+    elif 'Cd' in coeff_df.columns:
+        cd_true_values.append(coeff_df['Cd'].iloc[0])
+    else:
+        cd_true_values.append(np.nan)
+    
+    if 'cl' in coeff_df.columns:
+        cl_true_values.append(coeff_df['cl'].iloc[0])
+    elif 'Cl' in coeff_df.columns:
+        cl_true_values.append(coeff_df['Cl'].iloc[0])
+    else:
+        # Check if there's only one row of data
+        if len(coeff_df) == 1 and len(coeff_df.columns) == 2:
+            cl_true_values.append(coeff_df.iloc[0, 1])  # Second column
+        else:
+            cl_true_values.append(np.nan)
 
 # Add to dataframe
 df_forces['body_height_mm'] = body_heights
@@ -80,15 +101,6 @@ print(f"Mean absolute Cl error: {df_forces['Cl_error_%'].abs().mean():.2f}%")
 print(f"Cd RMSE: {np.sqrt(np.mean((df_forces['Cd_pred_calc'] - df_forces['Cd_true_file'])**2)):.4f}")
 print(f"Cl RMSE: {np.sqrt(np.mean((df_forces['Cl_pred_calc'] - df_forces['Cl_true_file'])**2)):.4f}")
 
-# Calculate R² for coefficients
-from scipy import stats
-r2_cd = stats.pearsonr(df_forces['Cd_true_file'], df_forces['Cd_pred_calc'])[0]**2
-r2_cl = stats.pearsonr(df_forces['Cl_true_file'], df_forces['Cl_pred_calc'])[0]**2
-print(f"\nR² scores:")
-print(f"  Cd R²: {r2_cd:.4f}")
-print(f"  Cl R²: {r2_cl:.4f}")
-
 # Save complete results
 df_forces.to_csv('coefficient_comparison.csv', index=False)
 print("\n✅ Full results saved to coefficient_comparison.csv")
-print("   This file includes frontal areas, predicted and actual coefficients for each case")
