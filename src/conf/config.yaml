@@ -127,13 +127,13 @@ model:
   num_surface_neighbors: 7 # How many neighbors?
   use_surface_normals: true # Use surface normals and surface areas for surface computation?
   use_surface_area: true # Use only surface normals and not surface area
-  integral_loss_scaling_factor: 10000 # Scale integral loss by this factor increased from 100 -----------------------------------
+  integral_loss_scaling_factor: 100 # Scale integral loss by this factor increased from 100 -----------------------------------
   normalization: min_max_scaling # or mean_std_scaling
   encode_parameters: false # encode inlet velocity and air density in the model
   
   # Loss scaling adjustments for surface-only training
-  surf_loss_scaling: 0.01  # FIXED: Reduced from 5.0 for surface-only training
-  vol_loss_scaling: 0.0   # FIXED: Set to 0.0 for surface-only training
+  surf_loss_scaling: 5.0  # FIXED: Reduced from 5.0 for surface-only training
+  vol_loss_scaling: 1.0   # FIXED: Set to 0.0 for surface-only training
   
   geometry_encoding_type: both # geometry encoder type, sdf, stl, both
   solution_calculation_mode: two-loop # one-loop is better for sharded, two-loop is lower memory but more overhead
@@ -214,10 +214,10 @@ val: # Validation configurable parameters
 # │          Testing data Configs             │
 # └───────────────────────────────────────────┘  
 eval: # Testing configurable parameters
-  test_path: /data/ahmed_data/ahmed_data/raw_test/  # ← Only runs 451-500
-  # test_path: /data/ahmed_data/ahmed_data/raw_test_train_1_50/  # ← testing on training data 1-50
-  save_path: /data/ahmed_data/predictions3/  # FIXED NVIDIA Guideline 17
-  # save_path: /data/ahmed_data/predictions_train/  # ← testing on training data 1-50
+  # test_path: /data/ahmed_data/ahmed_data/raw_test/  # ← Only runs 451-500
+  test_path: /data/ahmed_data/ahmed_data/raw_test_train_1_50/  # ← testing on training data 1-50
+  # save_path: /data/ahmed_data/predictions3/  # FIXED NVIDIA Guideline 17
+  save_path: /data/ahmed_data/predictions_train/  # ← testing on training data 1-50
   checkpoint_name: DoMINO.0.499.pt  # ← CHANGE THIS (was DoMINO.0.49.pt)
   scaling_param_path: outputs/NEWAhmed_Dataset  # ← CHANGE THIS (remove /scaling_params)
   refine_stl: False # Automatically refine STL during inference
