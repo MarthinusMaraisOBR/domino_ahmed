@@ -36,7 +36,8 @@ hydra: # Hydra config
   output_subdir: hydra  # Default is .hydra which causes files not being uploaded in W&B.
 
 # The directory to search for checkpoints to continue training.
-resume_dir: ${output}/models
+# resume_dir: ${output}/models
+resume_dir: outputs/NEWAhmed_Dataset/3/models
 
 # ┌───────────────────────────────────────────┐
 # │            Data Preprocessing             │
