@@ -37,7 +37,7 @@ hydra: # Hydra config
 
 # The directory to search for checkpoints to continue training.
 # resume_dir: ${output}/models
-resume_dir: outputs/NEWAhmed_Dataset/3/models
+resume_dir: outputs/
 
 # ┌───────────────────────────────────────────┐
 # │            Data Preprocessing             │
