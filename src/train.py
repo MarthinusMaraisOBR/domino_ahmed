@@ -602,7 +602,7 @@ def main(cfg: DictConfig) -> None:
         )
 
     # optimizer = apex.optimizers.FusedAdam(model.parameters(), lr=0.001)
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.005)
     scheduler = torch.optim.lr_scheduler.MultiStepLR(
         optimizer, milestones=[100, 200, 300, 400, 500, 600, 700, 800], gamma=0.5
     )
