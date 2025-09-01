@@ -3,7 +3,7 @@ import numpy as np
 
 # Read force predictions
 forces = []
-with open('test_output.txt', 'r') as f:
+with open('test_output3.txt', 'r') as f:
     current_run = {}
     for line in f:
         if 'Drag=' in line:
