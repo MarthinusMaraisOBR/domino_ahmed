@@ -190,7 +190,7 @@ model:
 # │          Training Configs                 │
 # └───────────────────────────────────────────┘  
 train: # Training configurable parameters
-  epochs: 500  # FIXED: NVIDIA Guideline 12 - Reduced from 1000 for initial testing
+  epochs: 700  # FIXED: NVIDIA Guideline 12 - Reduced from 1000 for initial testing
   checkpoint_interval: 50
   dataloader:
     batch_size: 1
