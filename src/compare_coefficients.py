@@ -3,7 +3,7 @@ import numpy as np
 
 # Read force predictions
 forces = []
-with open('test_output_exp4.txt', 'r') as f:
+with open('test_output_exp5.txt', 'r') as f:
     current_run = {}
     for line in f:
         if 'Drag=' in line:
@@ -102,5 +102,5 @@ print(f"Cd RMSE: {np.sqrt(np.mean((df_forces['Cd_pred_calc'] - df_forces['Cd_tru
 print(f"Cl RMSE: {np.sqrt(np.mean((df_forces['Cl_pred_calc'] - df_forces['Cl_true_file'])**2)):.4f}")
 
 # Save complete results
-df_forces.to_csv('coefficient_comparison.csv', index=False)
-print("\n✅ Full results saved to coefficient_comparison.csv")
+df_forces.to_csv('coefficient_comparison6.csv', index=False)
+print("\n✅ Full results saved to coefficient_comparison5.csv")
