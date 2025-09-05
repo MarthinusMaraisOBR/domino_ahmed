@@ -32,8 +32,8 @@ import vtk
 from physicsnemo.utils.domino.utils import *
 from torch.utils.data import Dataset
 
-AIR_DENSITY = 1.205
-STREAM_VELOCITY = 1
+AIR_DENSITY = 1.0
+STREAM_VELOCITY = 1.0
 
 
 class DriveSimPaths:

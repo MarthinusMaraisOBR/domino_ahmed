@@ -19,7 +19,7 @@
 project: # Project name
   name: NEWAhmed_Dataset  # FIXED Changed from AWS_Dataset (NVIDIA Guideline 1)
   
-exp_tag: 6 # Experiment tag (NVIDIA Guideline 2) ✅
+exp_tag: 7 # Experiment tag (NVIDIA Guideline 2) ✅
 # 2 Results:
 # Avg Predicted Drag: 0.013909
 # Avg True Drag: 0.016603
@@ -37,7 +37,7 @@ hydra: # Hydra config
 
 # The directory to search for checkpoints to continue training.
 # resume_dir: ${output}/models
-resume_dir: /workspace/PhysicsNeMo/examples/cfd/external_aerodynamics/domino/src/outputs/NEWAhmed_Dataset/6/models
+resume_dir: /workspace/PhysicsNeMo/examples/cfd/external_aerodynamics/domino/src/outputs/NEWAhmed_Dataset/7/models
 
 # ┌───────────────────────────────────────────┐
 # │            Data Preprocessing             │
@@ -190,7 +190,7 @@ model:
 # │          Training Configs                 │
 # └───────────────────────────────────────────┘  
 train: # Training configurable parameters
-  epochs: 700  # FIXED: NVIDIA Guideline 12 - Reduced from 1000 for initial testing
+  epochs: 500  # FIXED: NVIDIA Guideline 12 - Reduced from 1000 for initial testing
   checkpoint_interval: 50
   dataloader:
     batch_size: 1
@@ -215,11 +215,11 @@ val: # Validation configurable parameters
 # │          Testing data Configs             │
 # └───────────────────────────────────────────┘  
 eval: # Testing configurable parameters
-  # test_path: /data/ahmed_data/ahmed_data/raw_test/  # ← Only runs 451-500
-  test_path: /data/ahmed_data/ahmed_data/raw_test_train_1_50/  # ← testing on training data 1-50
-  # save_path: /data/ahmed_data/predictions5/  # FIXED NVIDIA Guideline 17
-  save_path: /data/ahmed_data/predictions_train/  # ← testing on training data 1-50
-  checkpoint_name: test6.pt  # ← CHANGE THIS (was DoMINO.0.49.pt)
+  test_path: /data/ahmed_data/ahmed_data/raw_test/  # ← Only runs 451-500
+  # test_path: /data/ahmed_data/ahmed_data/raw_test_train_1_50/  # ← testing on training data 1-50
+  save_path: /data/ahmed_data/predictions7_500_test/  # FIXED NVIDIA Guideline 17
+  # save_path: /data/ahmed_data/predictions6_50_train/  # ← testing on training data 1-50
+  checkpoint_name: epoch_500.pt  # ← CHANGE THIS (was DoMINO.0.49.pt)
   scaling_param_path: outputs/NEWAhmed_Dataset  # ← CHANGE THIS (remove /scaling_params)
   refine_stl: False # Automatically refine STL during inference
   stencil_size: 7 # Stencil size for evaluating surface and volume model
